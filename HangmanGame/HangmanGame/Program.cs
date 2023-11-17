@@ -29,7 +29,7 @@ namespace HangmanGame
             }
             else
             {
-                Console.WriteLine("Please select an available option.\nPress any key to continue...\n");
+                Console.WriteLine("\nPlease select an available option.\nPress any key to continue...\n");
                 Console.ReadKey();
                 Console.Clear();
                 ExecuteSolution();
