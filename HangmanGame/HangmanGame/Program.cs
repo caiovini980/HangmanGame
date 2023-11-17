@@ -5,18 +5,38 @@ namespace HangmanGame
 {
     class Program
     {
-        private InputManager _inputManager = new InputManager();
-        private GameManager _gameManager = new GameManager();
+        // Delegates
+        public delegate void GameStartedEventHandler(object source, EventArgs args);
+        public delegate void SolutionInitializedHandler(object source, EventArgs args);
+        
+        // Events
+        public event GameStartedEventHandler? GameStarted;
+        public event SolutionInitializedHandler? SolutionInitialized;
 
-        private void SetupManagers()
+        private GameManager _gameManager;
+        private InputManager _inputManager;
+        private WordsManager _wordsManager;
+
+        // Methods
+        Program()
         {
-            _inputManager.Setup();
-            _gameManager.Setup();
+            _gameManager = new GameManager();
+            _inputManager = new InputManager();
+            _wordsManager = new WordsManager();
+        }
+        
+        private void SetupEvents()
+        {
+            SolutionInitialized += _gameManager.OnSolutionInitialized;
+            SolutionInitialized += _inputManager.OnSolutionInitialized;
+            SolutionInitialized += _wordsManager.OnSolutionInitialized;
+
+            GameStarted += _gameManager.OnGameStarted;
         }
 
         private void ExecuteSolution()
         {
-            Console.WriteLine("Welcome to the Hangman game!");
+            Console.WriteLine("\nWelcome to the Hangman game!");
             Console.WriteLine("1 - Start game");
             Console.WriteLine("0 - Quit game");
             ConsoleKeyInfo key = Console.ReadKey();
@@ -25,7 +45,7 @@ namespace HangmanGame
             {
                 Console.Clear();
                 Console.WriteLine("Key pressed is {0}\n", key.Key);
-                _gameManager.Play();
+                GameStarted?.Invoke(this, EventArgs.Empty);
             }
             else
             {
@@ -39,7 +59,8 @@ namespace HangmanGame
         static int Main(string[] args)
         {
             Program solution = new Program();
-            solution.SetupManagers();
+            solution.SetupEvents();
+            solution.SolutionInitialized?.Invoke(solution, EventArgs.Empty);
             
             // Running
             solution.ExecuteSolution();

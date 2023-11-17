@@ -5,25 +5,34 @@ namespace HangmanGame.Managers;
 
 public class InputManager : ManagerBase
 {
+    // Variables
     private List<ConsoleKey> _menuKeys = new List<ConsoleKey>();
     
-    private readonly int _numPadMinValueIndex = 96;
+    // Key Codes
     private readonly int _upperNumbersMinValueIndex = 48;
-
+    private readonly int _numPadMinValueIndex = 96;
     private readonly int _upperNumbersOne = 49;
     private readonly int _numPadOne = 97;
 
     private readonly string _gamePattern = "^[a-zA-Z0-9]+$";
-        
+    
+    // Subscriptions
+    public override void OnSolutionInitialized(object source, EventArgs eventArgs)
+    {
+        Setup();
+    }
+    
+    // Methods
     public override void Setup()
     {
+        Console.WriteLine("Initializing Input Manager...");
         // Setup menu keys (0 - 1)
         _menuKeys.Add((ConsoleKey)_upperNumbersMinValueIndex);
         _menuKeys.Add((ConsoleKey)_upperNumbersOne);
         _menuKeys.Add((ConsoleKey)_numPadMinValueIndex);
         _menuKeys.Add((ConsoleKey)_numPadOne);
     }
-    
+
     public bool IsInputValid(ConsoleKeyInfo keyInfo, GameStates gameState)
     {
         // check inputs for menu

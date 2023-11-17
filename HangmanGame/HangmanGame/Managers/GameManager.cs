@@ -2,29 +2,54 @@
 
 public class GameManager : ManagerBase
 {
+    // Delegates
+    public delegate void GameEndedEventHandler(object source, EventArgs args);
+
+    // Events
+    public event GameEndedEventHandler? GameEnded;
+    
+    // Variables
     private bool _isGameOver = false;
     
+    // Subscriptions
+    public void OnGameStarted(object source, EventArgs eventArgs)
+    {
+        Play();
+    }
+    
+    public override void OnSolutionInitialized(object source, EventArgs eventArgs)
+    {
+        Setup();
+    }
+    
+    // Methods
     public override void Setup()
     {
-        // Read the external file
-        // Get a random word
+        Console.WriteLine("Initializing Game Manager...");
     }
 
-    public void Play()
+    private void Play()
     {
         while (!_isGameOver)
         {
             // keeps running the game
         }
+        OnGameEnded();
     }
 
-    public void Restart()
+    private void Restart()
     {
         
     }
 
-    public void CloseGame()
+    private void CloseGame()
     {
         
+    }
+    
+    // Event calls
+    protected virtual void OnGameEnded()
+    {
+        GameEnded?.Invoke(this, EventArgs.Empty);
     }
 }
