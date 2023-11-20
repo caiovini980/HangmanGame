@@ -35,4 +35,9 @@ public class WordsManager : ManagerBase
 
         return _defaultString;
     }
+
+    public char[] GetLettersFromWord(string gameWord)
+    {
+        return gameWord.ToCharArray();
+    }
 }

@@ -30,13 +30,19 @@ public class GameManager : ManagerBase
         Console.WriteLine("Initializing Game Manager...");
     }
 
-    private void Play(string selectedWord)
+    private void Play(char[] selectedWord)
     {
-        Console.WriteLine("Selected word is: {0}", selectedWord);
+        Console.WriteLine("Selected word letters are: ");
+        foreach (var letter in selectedWord)
+        {
+            Console.WriteLine(letter);
+        }
         
         while (!_isGameOver)
         {
             // keeps running the game
+            
+            
         }
         OnGameEnded();
     }
@@ -55,5 +61,6 @@ public class GameManager : ManagerBase
     private void OnGameEnded()
     {
         GameEnded?.Invoke(this, EventArgs.Empty);
+        CloseGame();
     }
 }
