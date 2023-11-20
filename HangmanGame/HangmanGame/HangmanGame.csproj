@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <Compile Remove="ENUMs\ConsoleKeys.cs" />
+      <Compile Remove="Managers\WordManager.cs" />
     </ItemGroup>
 
 </Project>
