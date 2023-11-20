@@ -2,6 +2,11 @@
 
 public class WordsManager : ManagerBase
 {
+    private readonly string _textFile = @"D:\GitHub\HangmanGame\HangmanGame\HangmanGame\Config\WordPool.txt";
+    private readonly string _defaultString = "HangmanGame";
+
+    private string[]? _availableWords;
+    
     // Subscriptions
     public override void OnSolutionInitialized(object source, EventArgs eventArgs)
     {
@@ -12,9 +17,22 @@ public class WordsManager : ManagerBase
     public override void Setup()
     {
         Console.WriteLine("Initializing Word Manager...");
-        // Read the external file
-        // Get a random word
+        if (File.Exists(_textFile))
+        {
+            string wordPoolText = File.ReadAllText(_textFile);
+            _availableWords = wordPoolText.Split("-");
+        }
     }
 
-    
+    public string GetRandomWord()
+    {
+        Random random = new Random();
+        if (_availableWords != null)
+        {
+            int randomIndex = random.Next(_availableWords.Length);
+            return _availableWords[randomIndex];
+        }
+
+        return _defaultString;
+    }
 }

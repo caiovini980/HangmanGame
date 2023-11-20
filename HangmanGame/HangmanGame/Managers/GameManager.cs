@@ -1,4 +1,6 @@
-﻿namespace HangmanGame.Managers;
+﻿using HangmanGame.CustomEventArgs;
+
+namespace HangmanGame.Managers;
 
 public class GameManager : ManagerBase
 {
@@ -12,9 +14,9 @@ public class GameManager : ManagerBase
     private bool _isGameOver = false;
     
     // Subscriptions
-    public void OnGameStarted(object source, EventArgs eventArgs)
+    public void OnGameStarted(object source, GameStartEventArgs eventArgs)
     {
-        Play();
+        Play(eventArgs.RandomWord);
     }
     
     public override void OnSolutionInitialized(object source, EventArgs eventArgs)
@@ -28,8 +30,10 @@ public class GameManager : ManagerBase
         Console.WriteLine("Initializing Game Manager...");
     }
 
-    private void Play()
+    private void Play(string selectedWord)
     {
+        Console.WriteLine("Selected word is: {0}", selectedWord);
+        
         while (!_isGameOver)
         {
             // keeps running the game
@@ -48,7 +52,7 @@ public class GameManager : ManagerBase
     }
     
     // Event calls
-    protected virtual void OnGameEnded()
+    private void OnGameEnded()
     {
         GameEnded?.Invoke(this, EventArgs.Empty);
     }
