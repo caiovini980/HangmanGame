@@ -34,51 +34,74 @@ public class GameManager : ManagerBase
 
     private void Play(char[] splittedWord, InputManager inputManager)
     {
-        /*
-         * Pegar o array de letras que vem e adicionar em um dicionario pra relacionar letra com posição da letra
-         * depois só pesquisar se a letra existe no dicionário, e substituir o placeholder na posição salva
-         */
-        
-        string connectedWord = UpdateWord(splittedWord, null, _wordPlaceholder);
-        Console.WriteLine(connectedWord);
+        SetPlaceholders(splittedWord);
+        Console.WriteLine(_wordPlaceholder);
 
+        List<char> usedLetters = new List<char>();
+        
         while (!_isGameOver)
         {
             // ask for a letter
-            Console.WriteLine("Please, try to guess a letter: ");
+            Console.WriteLine("\nPlease, try to guess a letter: ");
             ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
 
-            if (inputManager.IsInputValid(inputKeyInfo, GameStates.Running))
+            if (!inputManager.IsInputValid(inputKeyInfo, GameStates.Running))
             {
-                
+                Console.WriteLine("Invalid key pressed.");
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                Console.Clear();
+                continue;
             }
             
-            // if a letter is discovered,
-                // puts the letter into the _ placeholder
-                // add the letter into the "used" letters list
-            
-            // if a letter is wrong
-                // update the error state
-                    // change the hangman picture
-                // add the letter into the "used" letters list
-                
-            // If a letter has already been used
-                // Show a message saying that this letter was already used
-                
-            Console.ReadKey();
+            char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
+            char[] matchedItems = Array.FindAll(splittedWord, x => x == inputKeyInfo.KeyChar);
 
+            if (usedLetter != new char())
+            {
+                Console.WriteLine("\nAlready tried letter: {0}\nPlease use another letter.", usedLetter);
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                Console.Clear();
+                continue;
+            }
+                
+            if (matchedItems.Length > 0)
+            {
+                // found a letter
+                Console.WriteLine("\nFOUND A LETTER! {0}\n", matchedItems[0]);
+                
+                // if a letter is discovered,
+                // puts the letter into the _ placeholder
+                
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                Console.Clear();
+            }
+            else
+            {
+                // error
+                Console.WriteLine("WRONG GUESS!");
+                Console.WriteLine("Press any key to continue...");
+                Console.ReadKey();
+                Console.Clear();
+                    
+                // if a letter is wrong
+                // update the error state
+                // change the hangman picture
+            }
+                
+            usedLetters.Add(inputKeyInfo.KeyChar);
         }
         OnGameEnded();
     }
 
-    private string UpdateWord(char[] selectedWord, char? letterToCheck, string wordLinked)
+    private void SetPlaceholders(char[] selectedWord)
     {
         foreach (char letter in selectedWord)
         {
-            wordLinked += " _";
+            _wordPlaceholder += "_" + " ";
         }
-
-        return wordLinked;
     }
 
     private void Restart()
