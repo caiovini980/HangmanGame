@@ -1,4 +1,5 @@
-﻿using HangmanGame.Managers;
+﻿using HangmanGame.CustomEventArgs;
+using HangmanGame.Managers;
 using HangmanGame.ENUMs;
 
 namespace HangmanGame
@@ -6,7 +7,7 @@ namespace HangmanGame
     class Program
     {
         // Delegates
-        public delegate void GameStartedEventHandler(object source, EventArgs args);
+        public delegate void GameStartedEventHandler(object source, GameStartEventArgs args);
         public delegate void SolutionInitializedHandler(object source, EventArgs args);
         
         // Events
@@ -44,8 +45,20 @@ namespace HangmanGame
             if (_inputManager.IsInputValid(key, GameStates.Menu))
             {
                 Console.Clear();
-                Console.WriteLine("Key pressed is {0}\n", key.Key);
-                GameStarted?.Invoke(this, EventArgs.Empty);
+                Console.WriteLine("Key pressed is {0}\n", key.KeyChar);
+
+                if (key.KeyChar.ToString() == ((int)MenuOptions.StartGame).ToString())
+                {
+                    string gameWord = _wordsManager.GetRandomWord();
+                    char[] wordLetters = _wordsManager.GetLettersFromWord(gameWord);
+                
+                    GameStarted?.Invoke(this, new GameStartEventArgs(wordLetters, _inputManager));
+                }
+                
+                if (key.KeyChar.ToString() == MenuOptions.CloseGame.ToString())
+                {
+                    // close game
+                }
             }
             else
             {
@@ -56,7 +69,7 @@ namespace HangmanGame
             }
         }
         
-        static int Main(string[] args)
+        static int Main()
         {
             Program solution = new Program();
             solution.SetupEvents();
