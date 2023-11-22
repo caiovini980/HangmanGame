@@ -1,5 +1,6 @@
 ﻿using HangmanGame.CustomEventArgs;
 using HangmanGame.ENUMs;
+using HangmanGame.Utils;
 
 namespace HangmanGame.Managers;
 
@@ -55,8 +56,8 @@ public class GameManager : ManagerBase
             }
             
             char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
-            char[] matchedItems = Array.FindAll(splittedWord, x => x == inputKeyInfo.KeyChar);
-
+            int[] matchedItemsIndexes= splittedWord.FindAllIndexesOf(inputKeyInfo.KeyChar);
+            
             if (usedLetter != new char())
             {
                 Console.WriteLine("\nAlready tried letter: {0}\nPlease use another letter.", usedLetter);
@@ -66,10 +67,15 @@ public class GameManager : ManagerBase
                 continue;
             }
                 
-            if (matchedItems.Length > 0)
+            if (matchedItemsIndexes.Length > 0)
             {
                 // found a letter
-                Console.WriteLine("\nFOUND A LETTER! {0}\n", matchedItems[0]);
+                Console.WriteLine("\nFOUND A LETTER {0} on indexes: \n", usedLetter);
+
+                foreach (int index in matchedItemsIndexes)
+                {
+                    Console.WriteLine(index);
+                }
                 
                 // if a letter is discovered,
                 // puts the letter into the _ placeholder
@@ -93,6 +99,7 @@ public class GameManager : ManagerBase
                 
             usedLetters.Add(inputKeyInfo.KeyChar);
         }
+        
         OnGameEnded();
     }
 
