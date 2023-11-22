@@ -2,7 +2,7 @@
 
 public class WordsManager : ManagerBase
 {
-    private readonly string _textFile = @"D:\GitHub\HangmanGame\HangmanGame\HangmanGame\Config\WordPool.txt";
+    private readonly string _textFile = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Config\WordPool.txt");
     private readonly string _defaultString = "HangmanGame";
 
     private string[]? _availableWords;
@@ -34,5 +34,10 @@ public class WordsManager : ManagerBase
         }
 
         return _defaultString;
+    }
+
+    public char[] GetLettersFromWord(string gameWord)
+    {
+        return gameWord.ToCharArray();
     }
 }

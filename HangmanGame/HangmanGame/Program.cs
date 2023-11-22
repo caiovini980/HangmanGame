@@ -45,9 +45,20 @@ namespace HangmanGame
             if (_inputManager.IsInputValid(key, GameStates.Menu))
             {
                 Console.Clear();
-                Console.WriteLine("Key pressed is {0}\n", key.Key);
-                string gameWord = _wordsManager.GetRandomWord();
-                GameStarted?.Invoke(this, new GameStartEventArgs(gameWord));
+                Console.WriteLine("Key pressed is {0}\n", key.KeyChar);
+
+                if (key.KeyChar.ToString() == ((int)MenuOptions.StartGame).ToString())
+                {
+                    string gameWord = _wordsManager.GetRandomWord();
+                    char[] wordLetters = _wordsManager.GetLettersFromWord(gameWord);
+                
+                    GameStarted?.Invoke(this, new GameStartEventArgs(wordLetters, _inputManager));
+                }
+                
+                if (key.KeyChar.ToString() == MenuOptions.CloseGame.ToString())
+                {
+                    // close game
+                }
             }
             else
             {

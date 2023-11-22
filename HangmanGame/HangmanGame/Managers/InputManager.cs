@@ -5,15 +5,6 @@ namespace HangmanGame.Managers;
 
 public class InputManager : ManagerBase
 {
-    // Variables
-    private List<ConsoleKey> _menuKeys = new List<ConsoleKey>();
-    
-    // Key Codes
-    private readonly int _upperNumbersMinValueIndex = 48;
-    private readonly int _numPadMinValueIndex = 96;
-    private readonly int _upperNumbersOne = 49;
-    private readonly int _numPadOne = 97;
-
     private readonly string _gamePattern = "^[a-zA-Z0-9]+$";
     
     // Subscriptions
@@ -26,11 +17,6 @@ public class InputManager : ManagerBase
     public override void Setup()
     {
         Console.WriteLine("Initializing Input Manager...");
-        // Setup menu keys (0 - 1)
-        _menuKeys.Add((ConsoleKey)_upperNumbersMinValueIndex);
-        _menuKeys.Add((ConsoleKey)_upperNumbersOne);
-        _menuKeys.Add((ConsoleKey)_numPadMinValueIndex);
-        _menuKeys.Add((ConsoleKey)_numPadOne);
     }
 
     public bool IsInputValid(ConsoleKeyInfo keyInfo, GameStates gameState)
@@ -51,13 +37,7 @@ public class InputManager : ManagerBase
     
     private bool ValidateMenuInput(ConsoleKeyInfo keyInfo)
     {
-        foreach (ConsoleKey consoleKey in _menuKeys)
-        {
-            // TODO remove this
-            // Console.WriteLine($"{consoleKey} == {keyInfo.Key.ToString()}");
-            if (keyInfo.Key == consoleKey) { return true; }
-        }
-        
-        return false;
+        return keyInfo.KeyChar.ToString() == ((int)MenuOptions.StartGame).ToString() || 
+               keyInfo.KeyChar.ToString() == ((int)MenuOptions.CloseGame).ToString();
     }
 }

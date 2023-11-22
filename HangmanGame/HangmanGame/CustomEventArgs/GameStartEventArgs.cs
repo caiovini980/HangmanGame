@@ -1,11 +1,16 @@
-﻿namespace HangmanGame.CustomEventArgs;
+﻿using HangmanGame.Managers;
+
+namespace HangmanGame.CustomEventArgs;
 
 public class GameStartEventArgs : EventArgs
 {
-    public string RandomWord { get; set; }
+    public char[] RandomWord { get; private set; }
+    public InputManager InputManagerInstance { get; private set; }
+    
 
-    public GameStartEventArgs(string word)
+    public GameStartEventArgs(char[] word, InputManager inputManager)
     {
         RandomWord = word;
+        InputManagerInstance = inputManager;
     }
 }
