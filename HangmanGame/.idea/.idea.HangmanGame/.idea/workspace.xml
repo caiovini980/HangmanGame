@@ -7,12 +7,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7c6984d2-f7bb-4c4c-955c-954d1fdf35b1" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" afterDir="false" />
-    </list>
+    <list default="true" id="7c6984d2-f7bb-4c4c-955c-954d1fdf35b1" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
