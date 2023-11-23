@@ -1,4 +1,5 @@
-﻿using HangmanGame.CustomEventArgs;
+﻿using System.Text.RegularExpressions;
+using HangmanGame.CustomEventArgs;
 using HangmanGame.ENUMs;
 using HangmanGame.Utils;
 
@@ -6,16 +7,14 @@ namespace HangmanGame.Managers;
 
 public class GameManager : ManagerBase
 {
-    // Delegates
-    public delegate void GameEndedEventHandler(object source, EventArgs args);
-
-    // Events
-    public event GameEndedEventHandler? GameEnded;
-    
     // Variables
-    private bool _isGameOver = false;
+    private string[]? _hangImages;
     private string _wordPlaceholder = "";
-    private int _lettersFoundPerTurn = 1;
+    private readonly string _initialPlaceholder = "";
+    
+    // File Variables
+    private readonly string _path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Config\HangmanFigures.txt");
+    private readonly string _separator = ";";
     
     // Subscriptions
     public void OnGameStarted(object source, GameStartEventArgs eventArgs)
@@ -32,24 +31,44 @@ public class GameManager : ManagerBase
     public override void Setup()
     {
         Console.WriteLine("Initializing Game Manager...");
+        _hangImages = FileUtils.GetSeparatedStrings(_separator, _path);
     }
 
     private void Play(char[] splittedWord, InputManager inputManager)
     {
+        if (_hangImages == null)
+        {
+            Console.Error.WriteLine("Can't find path to Hangman Images, please provide the correct path.");
+            return;
+        }
+        
         List<char> usedLetters = new List<char>();
+        
+        int numberOfUniqueLetters = splittedWord.Distinct().Count();
+        int lettersFoundPerTurn = 1;
         int numberOfCorrectLetters = 0;
+        int numberOfErrors = 0;
+        int maxNumberOfErrors = _hangImages.Length - 1;
+            
+        bool winConditionReached = numberOfCorrectLetters >= numberOfUniqueLetters;
+        bool loseConditionReached = numberOfErrors >= maxNumberOfErrors;
         bool isGameOver = false;
         bool haveWon = false;
+        
         SetPlaceholders(splittedWord);
+        ShowHangman(numberOfErrors);
         
         while (!isGameOver)
         {
-            // ask for a letter
+            Console.WriteLine("number of correct letters: {0}\nnumber of unique letters: {1}", numberOfCorrectLetters, numberOfUniqueLetters);
+            
             Console.WriteLine(_wordPlaceholder);
             Console.WriteLine("\n\nPlease, try to guess a letter: ");
+            
             ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
+            bool isInputValidForRunningGame = inputManager.IsInputValid(inputKeyInfo, GameStates.Running);
 
-            if (!inputManager.IsInputValid(inputKeyInfo, GameStates.Running))
+            if (!isInputValidForRunningGame)
             {
                 Console.WriteLine("Invalid key pressed.");
                 ShowEndTurnSection();
@@ -58,46 +77,60 @@ public class GameManager : ManagerBase
             
             char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
             int[] matchedItemsIndexes= splittedWord.FindAllIndexesOf(inputKeyInfo.KeyChar);
+            bool isGuessOnSelectedWord = matchedItemsIndexes.Length > 0;
+            bool isGuessANewLetter = usedLetter == new char();
             
-            if (usedLetter != new char())
+            if (!isGuessANewLetter)
             {
                 Console.WriteLine("\nAlready tried letter: {0}\nPlease use another letter.", usedLetter);
                 ShowEndTurnSection();
                 continue;
             }
                 
-            if (matchedItemsIndexes.Length > 0)
+            if (isGuessOnSelectedWord)
             {
                 Console.WriteLine("\nFOUND A LETTER {0}!", usedLetter);
                 
                 UpdatePlaceholdersWithInputAt(matchedItemsIndexes, inputKeyInfo.KeyChar);
                 ShowEndTurnSection();
-                numberOfCorrectLetters += _lettersFoundPerTurn;
+                numberOfCorrectLetters += lettersFoundPerTurn; 
             }
             else
             {
-                // error
                 Console.WriteLine("\nWRONG GUESS!");
+                numberOfErrors += 1;
                 ShowEndTurnSection();
-
-                // if a letter is wrong
-                // update the error state
-                // change the hangman picture
             }
 
-            // if all letters were found = WIN
-            if (numberOfCorrectLetters >= splittedWord.Length)
+            if (winConditionReached)
             {
+                Console.WriteLine("FOUND ALL LETTERS");
                 isGameOver = true;
                 haveWon = true;
             }
             
-            // if reached all errors = LOSE
+            if (loseConditionReached)
+            {
+                Console.WriteLine("All hangman parts appeared, you LOSE!");
+                isGameOver = true;
+                haveWon = false;
+            }
             
             usedLetters.Add(inputKeyInfo.KeyChar);
+            ShowHangman(numberOfErrors);
+            Console.ReadKey();
         }
         
-        OnGameEnded(haveWon);
+        
+        ShowEndgameMessage(haveWon);
+        Console.WriteLine("Returning to menu...");
+        ShowEndTurnSection();
+    }
+
+    private void ShowHangman(int numberOfErrors)
+    {
+        if (_hangImages == null) { return; }
+        Console.WriteLine(Regex.Unescape(_hangImages[numberOfErrors]));
     }
 
     private void ShowEndTurnSection()
@@ -109,7 +142,8 @@ public class GameManager : ManagerBase
 
     private void SetPlaceholders(char[] selectedWord)
     {
-        foreach (char letter in selectedWord)
+        _wordPlaceholder = _initialPlaceholder;
+        foreach (char unused in selectedWord)
         {
             _wordPlaceholder += "-";
         }
@@ -117,31 +151,25 @@ public class GameManager : ManagerBase
 
     private void UpdatePlaceholdersWithInputAt(int[] indexes, char input)
     {
-        char[] array = _wordPlaceholder.ToCharArray();
+        char[] auxArray = _wordPlaceholder.ToCharArray();
         _wordPlaceholder = "";
         
         foreach (char index in indexes)
         {
-            array[index] = input;
+            auxArray[index] = input;
         }
 
-        _wordPlaceholder = new string(array);
+        _wordPlaceholder = new string(auxArray);
     }
 
-    private void Restart()
+    private void ShowEndgameMessage(bool haveWon)
     {
+        if (haveWon)
+        {
+            Console.WriteLine("You've won the game! Congratulations!");
+            return;
+        }
         
-    }
-
-    private void CloseGame(bool haveWon)
-    {
-        
-    }
-    
-    // Event calls
-    private void OnGameEnded(bool haveWon)
-    {
-        GameEnded?.Invoke(this, EventArgs.Empty);
-        CloseGame(haveWon);
+        Console.WriteLine("You've lose! Good luck next time!");
     }
 }

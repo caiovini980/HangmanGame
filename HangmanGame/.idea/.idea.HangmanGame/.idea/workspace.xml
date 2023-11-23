@@ -8,12 +8,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7c6984d2-f7bb-4c4c-955c-954d1fdf35b1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/HangmanGame/Config/HangmanFigures.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/ENUMs/ErrorStates.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/Utils/CustomUtils.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Utils/CustomUtils.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.csproj.CoreCompileInputs.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" afterDir="false" />
@@ -106,7 +102,7 @@
       <updated>1700223124616</updated>
       <workItem from="1700223128108" duration="16208000" />
       <workItem from="1700479020553" duration="3673000" />
-      <workItem from="1700746570199" duration="10655000" />
+      <workItem from="1700746570199" duration="12599000" />
     </task>
     <servers />
   </component>
