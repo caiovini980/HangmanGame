@@ -1,18 +1,19 @@
 ﻿using System.Text.RegularExpressions;
 using HangmanGame.CustomEventArgs;
 using HangmanGame.ENUMs;
+using HangmanGame.Interfaces;
 using HangmanGame.Utils;
 
 namespace HangmanGame.Managers;
 
-public class GameManager : ManagerBase
+public class GameManager : ManagerBase, IGameMessages, IFileMessages
 {
     // Variables
     private string[]? _hangImages;
-    private string _wordPlaceholder = "";
-    private readonly string _initialPlaceholder = "";
+    private string _wordPlaceholder = IGameMessages.EmptyString;
     
     // File Variables
+    private readonly string _cantFindPathErrorMessage = IFileMessages.CantFindHangmanFileMessage;
     private readonly string _path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Config\HangmanFigures.txt");
     private readonly string _separator = ";";
     
@@ -30,17 +31,13 @@ public class GameManager : ManagerBase
     // Methods
     public override void Setup()
     {
-        Console.WriteLine("Initializing Game Manager...");
+        Console.WriteLine(IGameMessages.InitializationMessage);
         _hangImages = FileUtils.GetSeparatedStrings(_separator, _path);
     }
 
     private void Play(char[] splittedWord, InputManager inputManager)
     {
-        if (_hangImages == null)
-        {
-            Console.Error.WriteLine("Can't find path to Hangman Images, please provide the correct path.");
-            return;
-        }
+        if (!HaveAllHangmanImages()) return;
         
         List<char> usedLetters = new List<char>();
         
@@ -48,83 +45,107 @@ public class GameManager : ManagerBase
         int lettersFoundPerTurn = 1;
         int numberOfCorrectLetters = 0;
         int numberOfErrors = 0;
-        int maxNumberOfErrors = _hangImages.Length - 1;
-            
-        bool winConditionReached = numberOfCorrectLetters >= numberOfUniqueLetters;
-        bool loseConditionReached = numberOfErrors >= maxNumberOfErrors;
+        int maxNumberOfErrors = _hangImages!.Length - 1;
+
         bool isGameOver = false;
         bool haveWon = false;
         
         SetPlaceholders(splittedWord);
-        ShowHangman(numberOfErrors);
         
         while (!isGameOver)
         {
-            Console.WriteLine("number of correct letters: {0}\nnumber of unique letters: {1}", numberOfCorrectLetters, numberOfUniqueLetters);
+            bool winConditionReached = numberOfCorrectLetters >= numberOfUniqueLetters;
+            bool loseConditionReached = numberOfErrors >= maxNumberOfErrors;
+            
+            ShowHangman(numberOfErrors);
+            ShowUsedLetters(usedLetters);
+
+            if (winConditionReached)
+            {
+                Console.WriteLine(IGameMessages.FoundAllLettersMessage, _wordPlaceholder);
+                isGameOver = true;
+                haveWon = true;
+                continue;
+            }
+            
+            if (loseConditionReached)
+            {
+                Console.WriteLine(IGameMessages.AllHangmanPartsAppearedMessage);
+                isGameOver = true;
+                haveWon = false;
+                continue;
+            }
             
             Console.WriteLine(_wordPlaceholder);
-            Console.WriteLine("\n\nPlease, try to guess a letter: ");
+            Console.WriteLine(IGameMessages.AskForLetterMessage);
             
             ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
             bool isInputValidForRunningGame = inputManager.IsInputValid(inputKeyInfo, GameStates.Running);
+            char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
 
             if (!isInputValidForRunningGame)
             {
-                Console.WriteLine("Invalid key pressed.");
+                Console.WriteLine(IGameMessages.InvalidKeyMessage);
                 ShowEndTurnSection();
                 continue;
             }
             
-            char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
-            int[] matchedItemsIndexes= splittedWord.FindAllIndexesOf(inputKeyInfo.KeyChar);
+            int[] matchedItemsIndexes = splittedWord.FindAllIndexesOf(inputKeyInfo.KeyChar);
             bool isGuessOnSelectedWord = matchedItemsIndexes.Length > 0;
             bool isGuessANewLetter = usedLetter == new char();
             
             if (!isGuessANewLetter)
             {
-                Console.WriteLine("\nAlready tried letter: {0}\nPlease use another letter.", usedLetter);
+                Console.WriteLine(IGameMessages.RepeatedLetterMessage, usedLetter);
                 ShowEndTurnSection();
                 continue;
             }
                 
             if (isGuessOnSelectedWord)
             {
-                Console.WriteLine("\nFOUND A LETTER {0}!", usedLetter);
+                Console.WriteLine(IGameMessages.FoundNewLetterMessage, usedLetter);
                 
                 UpdatePlaceholdersWithInputAt(matchedItemsIndexes, inputKeyInfo.KeyChar);
-                ShowEndTurnSection();
                 numberOfCorrectLetters += lettersFoundPerTurn; 
+                ShowEndTurnSection();
             }
             else
             {
-                Console.WriteLine("\nWRONG GUESS!");
+                Console.WriteLine(IGameMessages.WrongGuessMessage);
                 numberOfErrors += 1;
                 ShowEndTurnSection();
             }
-
-            if (winConditionReached)
-            {
-                Console.WriteLine("FOUND ALL LETTERS");
-                isGameOver = true;
-                haveWon = true;
-            }
-            
-            if (loseConditionReached)
-            {
-                Console.WriteLine("All hangman parts appeared, you LOSE!");
-                isGameOver = true;
-                haveWon = false;
-            }
             
             usedLetters.Add(inputKeyInfo.KeyChar);
-            ShowHangman(numberOfErrors);
-            Console.ReadKey();
         }
         
         
         ShowEndgameMessage(haveWon);
-        Console.WriteLine("Returning to menu...");
+        Console.WriteLine(IGameMessages.ReturningToMenuMessage);
         ShowEndTurnSection();
+    }
+
+    private bool HaveAllHangmanImages()
+    {
+        if (_hangImages == null)
+        {
+            Console.Error.WriteLine(_cantFindPathErrorMessage);
+            return false;
+        }
+
+        return true;
+    }
+
+    private void ShowUsedLetters(List<char> usedLetters)
+    {
+        Console.WriteLine(IGameMessages.UsedLettersSeparatorMessage);
+        string usedLettersText = IGameMessages.EmptyString;
+        foreach (var letter in usedLetters)
+        {
+            usedLettersText += letter + IGameMessages.DefaultSeparatorSpaced;
+        }
+
+        Console.WriteLine(usedLettersText + IGameMessages.LineBreak);
     }
 
     private void ShowHangman(int numberOfErrors)
@@ -135,24 +156,24 @@ public class GameManager : ManagerBase
 
     private void ShowEndTurnSection()
     {
-        Console.WriteLine("Press any key to continue...");
+        Console.WriteLine(IGameMessages.ContinueMessage);
         Console.ReadKey();
         Console.Clear();
     }
 
     private void SetPlaceholders(char[] selectedWord)
     {
-        _wordPlaceholder = _initialPlaceholder;
+        _wordPlaceholder = IGameMessages.EmptyString;
         foreach (char unused in selectedWord)
         {
-            _wordPlaceholder += "-";
+            _wordPlaceholder += IGameMessages.DefaultSeparator;
         }
     }
 
     private void UpdatePlaceholdersWithInputAt(int[] indexes, char input)
     {
         char[] auxArray = _wordPlaceholder.ToCharArray();
-        _wordPlaceholder = "";
+        _wordPlaceholder = IGameMessages.EmptyString;
         
         foreach (char index in indexes)
         {
@@ -166,10 +187,10 @@ public class GameManager : ManagerBase
     {
         if (haveWon)
         {
-            Console.WriteLine("You've won the game! Congratulations!");
+            Console.WriteLine(IGameMessages.WinGameMessage);
             return;
         }
         
-        Console.WriteLine("You've lose! Good luck next time!");
+        Console.WriteLine(IGameMessages.LoseGameMessage);
     }
 }
