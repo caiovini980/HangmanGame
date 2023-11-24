@@ -8,13 +8,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7c6984d2-f7bb-4c4c-955c-954d1fdf35b1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/HangmanGame/Config/WordPool.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HangmanGame/CustomEventArgs/GameStartEventArgs.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/HangmanGame/Managers/WordManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/HangmanGame.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/HangmanGame.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.HangmanGame/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Managers/GameManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/Managers/WordsManager.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Managers/WordsManager.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/HangmanGame/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/bin/Debug/net7.0/HangmanGame.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/HangmanGame.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/ref/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/ref/HangmanGame.dll" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/refint/HangmanGame.dll" beforeDir="false" afterPath="$PROJECT_DIR$/HangmanGame/obj/Debug/net7.0/refint/HangmanGame.dll" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,7 +55,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Create-WordManager&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;gameplay-loop&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -102,11 +102,23 @@
       <updated>1700223124616</updated>
       <workItem from="1700223128108" duration="16208000" />
       <workItem from="1700479020553" duration="3673000" />
+      <workItem from="1700746570199" duration="12599000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
