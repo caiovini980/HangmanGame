@@ -10,6 +10,7 @@ public class TestWordManager
     [SetUp]
     public void Init()
     {
+        Assert.IsInstanceOf<ManagerBase>(_wordsManager);
         Assert.That(_wordsManager, Is.Not.Null);
         _wordsManager.Setup();
     }
