@@ -42,6 +42,8 @@ namespace HangmanGame
             Console.WriteLine("0 - Quit game");
             ConsoleKeyInfo key = Console.ReadKey();
             
+            Console.WriteLine(key.KeyChar);
+            
             if (_inputManager.IsInputValid(key, GameStates.Menu))
             {
                 Console.Clear();
