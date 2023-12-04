@@ -45,8 +45,14 @@ public class InputManager : ManagerBase
         {
             return false;
         }
+
+        if (Regex.IsMatch(lastCharacter, @_gamePattern) || 
+            Regex.IsMatch(lastCharacter.ToLower(), @_gamePattern))
+        {
+            return true;
+        }
         
-        return Regex.IsMatch(lastCharacter, @_gamePattern);
+        return false;
     }
     
     private bool ValidateMenuInput(ConsoleKeyInfo keyInfo)

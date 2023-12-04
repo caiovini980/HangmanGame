@@ -81,31 +81,33 @@ public class GameManager : ManagerBase, IGameMessages, IFileMessages
             
             ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
             bool isInputValidForRunningGame = inputManager.IsInputValid(inputKeyInfo, GameStates.Running);
-            char usedLetter = usedLetters.Find(x => x == inputKeyInfo.KeyChar);
-
+            char loweredInput = inputKeyInfo.KeyChar.ToString().ToLower().ToCharArray()[0];
+            char usedLetter = usedLetters.Find(x => x == loweredInput);
+            char usedLetterFormatted = usedLetter.ToString().ToLower().ToCharArray()[0];
+            
             if (!isInputValidForRunningGame)
             {
                 Console.WriteLine(IGameMessages.InvalidKeyMessage);
                 ShowEndTurnSection();
                 continue;
             }
-            
-            int[] matchedItemsIndexes = splittedWord.FindAllIndexesOf(inputKeyInfo.KeyChar);
+
+            int[] matchedItemsIndexes = splittedWord.FindAllIndexesOf(loweredInput);
             bool isGuessOnSelectedWord = matchedItemsIndexes.Length > 0;
-            bool isGuessANewLetter = usedLetter == new char();
+            bool isGuessANewLetter = usedLetterFormatted == new char();
             
             if (!isGuessANewLetter)
             {
-                Console.WriteLine(IGameMessages.RepeatedLetterMessage, usedLetter);
+                Console.WriteLine(IGameMessages.RepeatedLetterMessage, usedLetterFormatted);
                 ShowEndTurnSection();
                 continue;
             }
                 
             if (isGuessOnSelectedWord)
             {
-                Console.WriteLine(IGameMessages.FoundNewLetterMessage, usedLetter);
+                Console.WriteLine(IGameMessages.FoundNewLetterMessage, usedLetterFormatted);
                 
-                UpdatePlaceholdersWithInputAt(matchedItemsIndexes, inputKeyInfo.KeyChar);
+                UpdatePlaceholdersWithInputAt(matchedItemsIndexes, loweredInput);
                 numberOfCorrectLetters += lettersFoundPerTurn; 
                 ShowEndTurnSection();
             }
@@ -116,9 +118,8 @@ public class GameManager : ManagerBase, IGameMessages, IFileMessages
                 ShowEndTurnSection();
             }
             
-            usedLetters.Add(inputKeyInfo.KeyChar);
+            usedLetters.Add(loweredInput);
         }
-        
         
         ShowEndgameMessage(haveWon);
         Console.WriteLine(IGameMessages.ReturningToMenuMessage);
