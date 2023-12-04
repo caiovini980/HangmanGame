@@ -5,7 +5,7 @@ namespace HangmanGame.Managers;
 
 public class InputManager : ManagerBase
 {
-    private readonly string _gamePattern = "^[a-zA-Z0-9]+$";
+    private readonly string _gamePattern = "^[a-zA-Z0-9]$";
     
     // Subscriptions
     public override void OnSolutionInitialized(object source, EventArgs eventArgs)
@@ -32,7 +32,27 @@ public class InputManager : ManagerBase
     
     private bool ValidateGameInput(ConsoleKeyInfo keyInfo)
     {
-        return Regex.IsMatch(keyInfo.Key.ToString(), @_gamePattern);
+        string keyString = keyInfo.Key.ToString();
+        string lastCharacter = keyString.Substring(keyString.Length - 1);
+        string secondLastCharacter = String.Empty;
+
+        if (keyString.Length > 1)
+        {
+            secondLastCharacter = keyString.Substring(keyString.Length - 2);
+        }
+        
+        if (!int.TryParse(lastCharacter, out int _) && secondLastCharacter != String.Empty)
+        {
+            return false;
+        }
+
+        if (Regex.IsMatch(lastCharacter, @_gamePattern) || 
+            Regex.IsMatch(lastCharacter.ToLower(), @_gamePattern))
+        {
+            return true;
+        }
+        
+        return false;
     }
     
     private bool ValidateMenuInput(ConsoleKeyInfo keyInfo)

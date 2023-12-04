@@ -1,19 +1,21 @@
-﻿using HangmanGame.CustomEventArgs;
+﻿using System.Text.RegularExpressions;
+using HangmanGame.CustomEventArgs;
 using HangmanGame.ENUMs;
+using HangmanGame.Interfaces;
+using HangmanGame.Utils;
 
 namespace HangmanGame.Managers;
 
-public class GameManager : ManagerBase
+public class GameManager : ManagerBase, IGameMessages, IFileMessages
 {
-    // Delegates
-    public delegate void GameEndedEventHandler(object source, EventArgs args);
-
-    // Events
-    public event GameEndedEventHandler? GameEnded;
-    
     // Variables
-    private bool _isGameOver = false;
-    private string _wordPlaceholder = "";
+    private string[]? _hangImages;
+    private string _wordPlaceholder = IGameMessages.EmptyString;
+    
+    // File Variables
+    private readonly string _cantFindPathErrorMessage = IFileMessages.CantFindHangmanFileMessage;
+    private readonly string _path = Path.Combine(Directory.GetCurrentDirectory(), @"..\..\..\Config\HangmanFigures.txt");
+    private readonly string _separator = ";";
     
     // Subscriptions
     public void OnGameStarted(object source, GameStartEventArgs eventArgs)
@@ -29,72 +31,167 @@ public class GameManager : ManagerBase
     // Methods
     public override void Setup()
     {
-        Console.WriteLine("Initializing Game Manager...");
+        Console.WriteLine(IGameMessages.InitializationMessage);
+        _hangImages = FileUtils.GetSeparatedStrings(_separator, _path);
     }
 
     private void Play(char[] splittedWord, InputManager inputManager)
     {
-        /*
-         * Pegar o array de letras que vem e adicionar em um dicionario pra relacionar letra com posição da letra
-         * depois só pesquisar se a letra existe no dicionário, e substituir o placeholder na posição salva
-         */
+        if (!HaveAllHangmanImages()) return;
         
-        string connectedWord = UpdateWord(splittedWord, null, _wordPlaceholder);
-        Console.WriteLine(connectedWord);
+        List<char> usedLetters = new List<char>();
+        
+        int numberOfUniqueLetters = splittedWord.Distinct().Count();
+        int lettersFoundPerTurn = 1;
+        int numberOfCorrectLetters = 0;
+        int numberOfErrors = 0;
+        int maxNumberOfErrors = _hangImages!.Length - 1;
 
-        while (!_isGameOver)
+        bool isGameOver = false;
+        bool haveWon = false;
+        
+        SetPlaceholders(splittedWord);
+        
+        while (!isGameOver)
         {
-            // ask for a letter
-            Console.WriteLine("Please, try to guess a letter: ");
-            ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
+            bool winConditionReached = numberOfCorrectLetters >= numberOfUniqueLetters;
+            bool loseConditionReached = numberOfErrors >= maxNumberOfErrors;
+            
+            ShowHangman(numberOfErrors);
+            ShowUsedLetters(usedLetters);
 
-            if (inputManager.IsInputValid(inputKeyInfo, GameStates.Running))
+            if (winConditionReached)
             {
-                
+                Console.WriteLine(IGameMessages.FoundAllLettersMessage, _wordPlaceholder);
+                isGameOver = true;
+                haveWon = true;
+                continue;
             }
             
-            // if a letter is discovered,
-                // puts the letter into the _ placeholder
-                // add the letter into the "used" letters list
+            if (loseConditionReached)
+            {
+                Console.WriteLine(IGameMessages.AllHangmanPartsAppearedMessage);
+                isGameOver = true;
+                haveWon = false;
+                continue;
+            }
             
-            // if a letter is wrong
-                // update the error state
-                    // change the hangman picture
-                // add the letter into the "used" letters list
-                
-            // If a letter has already been used
-                // Show a message saying that this letter was already used
-                
-            Console.ReadKey();
+            Console.WriteLine(_wordPlaceholder);
+            Console.WriteLine(IGameMessages.AskForLetterMessage);
+            
+            ConsoleKeyInfo inputKeyInfo = Console.ReadKey();
+            bool isInputValidForRunningGame = inputManager.IsInputValid(inputKeyInfo, GameStates.Running);
+            char loweredInput = inputKeyInfo.KeyChar.ToString().ToLower().ToCharArray()[0];
+            char usedLetter = usedLetters.Find(x => x == loweredInput);
+            char usedLetterFormatted = usedLetter.ToString().ToLower().ToCharArray()[0];
+            
+            if (!isInputValidForRunningGame)
+            {
+                Console.WriteLine(IGameMessages.InvalidKeyMessage);
+                ShowEndTurnSection();
+                continue;
+            }
 
+            int[] matchedItemsIndexes = splittedWord.FindAllIndexesOf(loweredInput);
+            bool isGuessOnSelectedWord = matchedItemsIndexes.Length > 0;
+            bool isGuessANewLetter = usedLetterFormatted == new char();
+            
+            if (!isGuessANewLetter)
+            {
+                Console.WriteLine(IGameMessages.RepeatedLetterMessage, usedLetterFormatted);
+                ShowEndTurnSection();
+                continue;
+            }
+                
+            if (isGuessOnSelectedWord)
+            {
+                Console.WriteLine(IGameMessages.FoundNewLetterMessage, usedLetterFormatted);
+                
+                UpdatePlaceholdersWithInputAt(matchedItemsIndexes, loweredInput);
+                numberOfCorrectLetters += lettersFoundPerTurn; 
+                ShowEndTurnSection();
+            }
+            else
+            {
+                Console.WriteLine(IGameMessages.WrongGuessMessage);
+                numberOfErrors += 1;
+                ShowEndTurnSection();
+            }
+            
+            usedLetters.Add(loweredInput);
         }
-        OnGameEnded();
+        
+        ShowEndgameMessage(haveWon);
+        Console.WriteLine(IGameMessages.ReturningToMenuMessage);
+        ShowEndTurnSection();
     }
 
-    private string UpdateWord(char[] selectedWord, char? letterToCheck, string wordLinked)
+    private bool HaveAllHangmanImages()
     {
-        foreach (char letter in selectedWord)
+        if (_hangImages == null)
         {
-            wordLinked += " _";
+            Console.Error.WriteLine(_cantFindPathErrorMessage);
+            return false;
         }
 
-        return wordLinked;
+        return true;
     }
 
-    private void Restart()
+    private void ShowUsedLetters(List<char> usedLetters)
     {
-        
+        Console.WriteLine(IGameMessages.UsedLettersSeparatorMessage);
+        string usedLettersText = IGameMessages.EmptyString;
+        foreach (var letter in usedLetters)
+        {
+            usedLettersText += letter + IGameMessages.DefaultSeparatorSpaced;
+        }
+
+        Console.WriteLine(usedLettersText + IGameMessages.LineBreak);
     }
 
-    private void CloseGame()
+    private void ShowHangman(int numberOfErrors)
     {
-        
+        if (_hangImages == null) { return; }
+        Console.WriteLine(Regex.Unescape(_hangImages[numberOfErrors]));
     }
-    
-    // Event calls
-    private void OnGameEnded()
+
+    private void ShowEndTurnSection()
     {
-        GameEnded?.Invoke(this, EventArgs.Empty);
-        CloseGame();
+        Console.WriteLine(IGameMessages.ContinueMessage);
+        Console.ReadKey();
+        Console.Clear();
+    }
+
+    private void SetPlaceholders(char[] selectedWord)
+    {
+        _wordPlaceholder = IGameMessages.EmptyString;
+        foreach (char unused in selectedWord)
+        {
+            _wordPlaceholder += IGameMessages.DefaultSeparator;
+        }
+    }
+
+    private void UpdatePlaceholdersWithInputAt(int[] indexes, char input)
+    {
+        char[] auxArray = _wordPlaceholder.ToCharArray();
+        _wordPlaceholder = IGameMessages.EmptyString;
+        
+        foreach (char index in indexes)
+        {
+            auxArray[index] = input;
+        }
+
+        _wordPlaceholder = new string(auxArray);
+    }
+
+    private void ShowEndgameMessage(bool haveWon)
+    {
+        if (haveWon)
+        {
+            Console.WriteLine(IGameMessages.WinGameMessage);
+            return;
+        }
+        
+        Console.WriteLine(IGameMessages.LoseGameMessage);
     }
 }
